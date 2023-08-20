@@ -1,10 +1,10 @@
 #include "Motor.h"
 
-Motor::Motor(byte forwardMotorPin)
+Motor::Motor(byte actuator)
 {
     this->hasSpeedControl = false;
-    this->actuator = forwardMotorPin;
-    pinMode(forwardMotorPin, OUTPUT);
+    this->actuator = actuator;
+    pinMode(actuator, OUTPUT);
 }
 
 Motor::Motor(byte forwardMotorPin, byte backwardMotorPin)
