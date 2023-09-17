@@ -23,6 +23,8 @@ void Operation::control()
         onoffLed.turnOn();
         cleaningLed.turnOff();
         squeegeeingLed.turnOff();
+        // start cleaning
+        status = 2;
         break;
     case 2: // "CLEANING"
         statusDescription = "CLEANING";

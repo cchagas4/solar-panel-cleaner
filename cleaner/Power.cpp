@@ -34,16 +34,16 @@ bool Power::isOn()
 {
     isPowerOn = digitalRead(onOff);
     // Debug
-    String on_off = isPowerOn == HIGH ? "ON" : "OFF";
-    Serial.println("POWER ---> [" + on_off + "]");
+    String currentStatus = isPowerOn == HIGH ? "ON" : "OFF";
+    Serial.println("POWER ---> [" + currentStatus + "]");
     if (isPowerOn == LOW)
     {
         off();
-    }
-    else {
+    } else if(lastStatus != currentStatus){
         on();
     }
 
+    lastStatus = currentStatus;
     return isPowerOn;
 }
 

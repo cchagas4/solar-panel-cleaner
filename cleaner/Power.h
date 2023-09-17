@@ -10,6 +10,7 @@ private:
 	int isPowerOn;
 	byte onOff;
 	byte emergency;
+	String lastStatus;
 	void setPinsToLow();
 
 public:
