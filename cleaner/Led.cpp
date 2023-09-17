@@ -1,17 +1,30 @@
 #include "Led.h"
 
-Led::Led()
+Led::Led(byte pin)
 {
+    led = pin;
+    pinMode(pin, OUTPUT);
 }
 
-void Led::config()
+Led::Led()
 {
     pinMode(led, OUTPUT);
 }
 
-void Led::changeIndicativeLed(byte led)
+void Led::turnOn()
 {
-    this->led = led;
+    digitalWrite(led, HIGH);
+}
+
+void Led::turnOff()
+{
+    digitalWrite(led, LOW);
+}
+
+void Led::setPinLed(byte pin)
+{
+    led = pin;
+    pinMode(pin, OUTPUT);
 }
 
 void Led::fade()
@@ -41,4 +54,9 @@ void Led::blinkCustom(int ledOnTime, int ledOffTime)
     Led::ledOnTime = ledOnTime;
     Led::ledOffTime = ledOffTime;
     blink();
+}
+
+int Led::getPin()
+{
+    return this->led;
 }

@@ -12,24 +12,53 @@
 
 Power::Power(byte onOff, byte emergency)
 {
-    pinMode(onOff, INPUT);
-    pinMode(emergency, INPUT);
-    powerOff();
-
-    Operation::status = 3; // STARTING
+    this->onOff = onOff;
+    this->emergency = emergency;
+    Operation::status = 0;
 }
 
-void Power::powerOn()
+void Power::on()
 {
-    isOn = true;
+    isPowerOn = HIGH;
+    Operation::status = 1;
 }
 
-void Power::powerOff()
+void Power::off()
 {
-    isOn = false;
+    isPowerOn = LOW;
+    setPinsToLow();
+    Operation::status = 0;
+}
+
+bool Power::isOn()
+{
+    isPowerOn = digitalRead(onOff);
+    // Debug
+    String on_off = isPowerOn == HIGH ? "ON" : "OFF";
+    Serial.println("POWER ---> [" + on_off + "]");
+    if (isPowerOn == LOW)
+    {
+        off();
+    }
+    else {
+        on();
+    }
+
+    return isPowerOn;
+}
+
+void Power::setPinsToLow()
+{
     for (int pin : pins)
     {
-        pinMode(pin, OUTPUT);
-        digitalWrite(pin, LOW);
+        if (pin == onOff || pin == emergency)
+        {
+            pinMode(pin, INPUT_PULLUP);
+        }
+        else
+        {
+            pinMode(pin, OUTPUT);
+            digitalWrite(pin, LOW);
+        }
     }
 }

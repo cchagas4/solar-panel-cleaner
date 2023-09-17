@@ -1,4 +1,3 @@
-
 #ifndef ARDUINO_OPERATION_H
 #define ARDUINO_OPERATION_H
 #include <Arduino.h>
@@ -7,10 +6,17 @@
 class Operation
 {
 private:
+	Led onoffLed;
+	Led cleaningLed;
+	Led squeegeeingLed;
+	String statusDescription;
+
 public:
-	Operation();
+	Operation(Led onoff,
+			  Led cleaning,
+			  Led squeegeeing);
 
 	inline static int status = 0;
-	static void control();
+	void control();
 };
 #endif

@@ -1,34 +1,47 @@
 #include "Operation.h"
 
-Operation::Operation()
+Operation::Operation(Led onoff, Led cleaning, Led squeegeeing)
 {
+    onoffLed = onoff;
+    cleaningLed = cleaning;
+    squeegeeingLed = squeegeeing;
 }
 
 void Operation::control()
 {
-    Operation::status = 3; // STARTING
-    while (true)
+    switch (Operation::status)
     {
-        switch (Operation::status)
-        {
-        case 0: // "OFF"
-            Led::blinkCustom(0, 1000);
-            break;
-        case 1: // "ON"
-            Led::blinkCustom(0, 1000);
-            break;
-        case 2: // "CLEANING"
-            Led::fade();
-            break;
-        case 3: // "STARTING"
-            Led::blinkCustom(400, 400);
-            break;
-        case 4: // "ERROR"
-            Led::blinkCustom(800, 200);
-            break;
-        default:
-            status = 4;
-            break;
-        }
+
+    case 0: // "OFF"
+        statusDescription = "OFF";
+        onoffLed.turnOff();
+        cleaningLed.turnOff();
+        squeegeeingLed.turnOff();
+        break;
+    case 1: // "ON" TODO
+        statusDescription = "ON";
+        onoffLed.turnOn();
+        cleaningLed.turnOff();
+        squeegeeingLed.turnOff();
+        break;
+    case 2: // "CLEANING"
+        statusDescription = "CLEANING";
+        cleaningLed.turnOn();
+        squeegeeingLed.turnOff();
+        break;
+    case 3: // "SQUEEGEEING"
+        statusDescription = "SQUEEGEEING";
+        cleaningLed.turnOff();
+        squeegeeingLed.turnOn();
+        break;
+    case 4: // "ERROR"
+        statusDescription = "ERROR";
+        cleaningLed.turnOn();
+        squeegeeingLed.turnOn();
+        break;
+    default:
+        Operation::status = 4;
+        break;
     }
+    Serial.println("STATUS ---> [" + statusDescription + "]");
 }

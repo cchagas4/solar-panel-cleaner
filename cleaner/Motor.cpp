@@ -2,20 +2,20 @@
 
 Motor::Motor(byte actuator)
 {
-    this->hasSpeedControl = false;
-    this->actuator = actuator;
+    hasSpeedControl = false;
+    actuator = actuator;
     pinMode(actuator, OUTPUT);
 }
 
 Motor::Motor(byte forwardMotorPin, byte backwardMotorPin)
 {
-    this->forwardMotorPin = forwardMotorPin;
-    this->backwardMotorPin = forwardMotorPin;
+    forwardMotorPin = forwardMotorPin;
+    backwardMotorPin = forwardMotorPin;
 
     pinMode(forwardMotorPin, OUTPUT);
     pinMode(backwardMotorPin, OUTPUT);
 
-    this->hasSpeedControl = true;
+    hasSpeedControl = true;
 }
 
 void Motor::moveForward(int speed)
