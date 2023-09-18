@@ -4,27 +4,26 @@
 class Led
 {
 private:
-	inline static int brightness = 0;
-	inline static int fadeAmount = 5;
-	inline static int ledOnTime = 300;
-	inline static int ledOffTime = 200;
+    inline static int brightness = 0;
+    inline static int fadeAmount = 5;
+    inline static int ledOnTime = 300;
+    inline static int ledOffTime = 200;
 
-	byte led = 13; // Default value should be subscrived
+    byte led = 13; // Default value should be subscrived
 
 public:
-	Led(byte pin);
-	Led();
+    Led(byte pin);
+    Led();
 
-	void fade();
-	void blink();
-	void blinkCustom(int ledOnTime, int ledOffTime);
-	void turnOn();
-	void turnOff();
-	void setPinLed(byte pin);
-	int getPin();
+    void fade();
+    void blink();
+    void blinkCustom(int ledOnTime, int ledOffTime);
+    void turnOn();
+    void turnOff();
+    void setPinLed(byte pin);
+    int getPin();
 };
 #endif
-
 
 Led::Led(byte pin)
 {
@@ -87,32 +86,128 @@ int Led::getPin()
     return this->led;
 }
 
-#ifndef ARDUINO_OPERATION_H
-#define ARDUINO_OPERATION_H
-
-class Operation
+#ifndef ARDUINO_MOTOR_H
+#define ARDUINO_MOTOR_H
+class Motor
 {
 private:
-	Led onoffLed;
-	Led cleaningLed;
-	Led squeegeeingLed;
-	String statusDescription;
+    const static int MIN_SPEED = 0;
+    const static int MAX_SPEED = 255;
+
+    byte forwardMotorPin;
+    byte backwardMotorPin;
+    byte actuator;
+
+    bool hasSpeedControl;
 
 public:
-	Operation(Led onoff,
-			  Led cleaning,
-			  Led squeegeeing);
+    Motor();
+    Motor(byte forwardMotorPin);
+    Motor(byte forwardMotorPin, byte backwardMotorPin);
 
-	inline static int status = 0;
-	void control();
+    void moveForward(int speed);
+    void moveBackward(int speed);
+    void stop();
+    void start();
+    // void startSmooth(bool isForward);
 };
 #endif
 
-Operation::Operation(Led onoff, Led cleaning, Led squeegeeing)
+Motor::Motor()
+{
+}
+
+Motor::Motor(byte actuator)
+{
+    hasSpeedControl = false;
+    this->actuator = actuator;
+    pinMode(actuator, OUTPUT);
+}
+
+Motor::Motor(byte forwardMotorPin, byte backwardMotorPin)
+{
+    this->forwardMotorPin = forwardMotorPin;
+    this->backwardMotorPin = forwardMotorPin;
+
+    pinMode(forwardMotorPin, OUTPUT);
+    pinMode(backwardMotorPin, OUTPUT);
+
+    hasSpeedControl = true;
+}
+
+void Motor::moveForward(int speed)
+{
+    analogWrite(forwardMotorPin, speed);
+}
+void Motor::moveBackward(int speed)
+{
+    analogWrite(backwardMotorPin, speed);
+}
+
+void Motor::stop()
+{
+    if (hasSpeedControl)
+    {
+        analogWrite(forwardMotorPin, MIN_SPEED);
+        analogWrite(backwardMotorPin, MIN_SPEED);
+    }
+    else
+    {
+        digitalWrite(actuator, LOW);
+    }
+}
+
+void Motor::start()
+{
+    if (hasSpeedControl)
+    {
+        analogWrite(forwardMotorPin, MAX_SPEED);
+        analogWrite(backwardMotorPin, MAX_SPEED);
+    }
+    else
+    {
+        digitalWrite(actuator, LOW);
+    }
+}
+
+#ifndef ARDUINO_OPERATION_H
+#define ARDUINO_OPERATION_H
+class Operation
+{
+private:
+    Led onoffLed;
+    Led cleaningLed;
+    Led squeegeeingLed;
+    Motor engineMotor;
+    Motor brushMotor;
+    Motor valveMotor;
+    String statusDescription;
+
+public:
+    Operation();
+    void configLeds(Led onoff, Led cleaning, Led squeegeeing);
+    void configMotors(Motor engine, Motor brush, Motor valve);
+    inline static int status = 0;
+    void control();
+};
+#endif
+
+Operation::Operation()
+{
+}
+
+void Operation::configLeds(Led onoff, Led cleaning, Led squeegeeing)
 {
     onoffLed = onoff;
     cleaningLed = cleaning;
     squeegeeingLed = squeegeeing;
+}
+
+void Operation::configMotors(Motor engine, Motor brush, Motor valve)
+{
+    engineMotor = engine;
+    brushMotor = brush;
+    valveMotor = valve;
 }
 
 void Operation::control()
@@ -138,16 +233,25 @@ void Operation::control()
         statusDescription = "CLEANING";
         cleaningLed.turnOn();
         squeegeeingLed.turnOff();
+        engineMotor.moveForward(255);
+        brushMotor.start();
+        valveMotor.start();
         break;
     case 3: // "SQUEEGEEING"
         statusDescription = "SQUEEGEEING";
         cleaningLed.turnOff();
         squeegeeingLed.turnOn();
+        engineMotor.moveBackward(255);
+        brushMotor.stop();
+        valveMotor.stop();
         break;
     case 4: // "ERROR"
         statusDescription = "ERROR";
         cleaningLed.turnOn();
         squeegeeingLed.turnOn();
+        engineMotor.stop();
+        brushMotor.stop();
+        valveMotor.stop();
         break;
     default:
         Operation::status = 4;
@@ -162,18 +266,19 @@ void Operation::control()
 class Power
 {
 private:
-	byte pins[14] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
-	int isPowerOn;
-	byte onOff;
-	byte emergency;
-	void setPinsToLow();
-	String lastStatus;
-public:
-	Power(byte power, byte emergency);
+    byte pins[14] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+    int isPowerOn;
+    byte onOff;
+    byte emergency;
+    void setPinsToLow();
+    String lastStatus;
 
-	void on();
-	void off();
-	bool isOn();
+public:
+    Power(byte power, byte emergency);
+
+    void on();
+    void off();
+    bool isOn();
 };
 #endif
 
@@ -216,7 +321,9 @@ bool Power::isOn()
     if (isPowerOn == LOW)
     {
         off();
-    } else if(lastStatus != currentStatus){
+    }
+    else if (lastStatus != currentStatus)
+    {
         on();
     }
 
@@ -240,6 +347,8 @@ void Power::setPinsToLow()
     }
 }
 
+// -----------------------------
+// --------- MAIN --------------
 
 #define INDICATIVE_RED 13
 #define INDICATIVE_BLUE 12
@@ -258,45 +367,52 @@ void Power::setPinsToLow()
 
 // float brushMotor;            // port 5
 
-// Motor motionEngine(FORWARD_ENGINE, BACKWARD_ENGINE);
+Motor motionEngine(FORWARD_ENGINE, BACKWARD_ENGINE);
 
-// Motor brush(BRUSH_ENGINE);
-// Motor valve(VALVE_ENGINE);
+Motor brush(BRUSH_ENGINE);
+Motor valve(VALVE_ENGINE);
 
 Power power(ON_OFF, EMERGENCY_BUTTON);
 Led red(INDICATIVE_RED);
 Led blue(INDICATIVE_BLUE);
 Led green(INDICATIVE_GREEN);
-Operation operation(red, blue, green);
+Operation operation;
 
 bool emergencyMode;
 bool powerFake = true;
 
 void setup()
 {
-  Serial.begin(115200);
-  attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON), emergencyTrigger, CHANGE);
+    Serial.begin(115200);
+    attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON), emergencyTrigger, CHANGE);
+    initialConfiguration();
 }
 
 void loop()
 {
-  Serial.println("--- | emergency mode --> " + String(emergencyMode));
-  if (!emergencyMode)
-  {
-    Serial.println("--- | Checking power on button status |");
-    if (power.isOn())
+    Serial.println("--- | emergency mode --> " + String(emergencyMode));
+    if (!emergencyMode)
     {
-      Serial.println("--- | Control |");
-      operation.control();
+        Serial.println("--- | Checking power on button status |");
+        if (power.isOn())
+        {
+            Serial.println("--- | Control |");
+            operation.control();
+        }
     }
-  }
-  // delay(1000);
+    // delay(1000);
+}
+
+void initialConfiguration()
+{
+    operation.configLeds(red, blue, green);
+    operation.configMotors(motionEngine, brush, valve);
 }
 
 void emergencyTrigger()
 {
-  emergencyMode = true;
-  power.off();
-  Serial.println("--- | EMERGENCY BUTTON WAS TRIGGERED |");
-  Serial.println("--- | TURNED OFF OPERATIONS |");
+    emergencyMode = true;
+    power.off();
+    Serial.println("--- | EMERGENCY BUTTON WAS TRIGGERED |");
+    Serial.println("--- | TURNED OFF OPERATIONS |");
 }

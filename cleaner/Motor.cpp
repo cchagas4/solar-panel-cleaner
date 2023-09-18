@@ -1,16 +1,20 @@
 #include "Motor.h"
 
+Motor::Motor()
+{
+}
+
 Motor::Motor(byte actuator)
 {
     hasSpeedControl = false;
-    actuator = actuator;
+    this->actuator = actuator;
     pinMode(actuator, OUTPUT);
 }
 
 Motor::Motor(byte forwardMotorPin, byte backwardMotorPin)
 {
-    forwardMotorPin = forwardMotorPin;
-    backwardMotorPin = forwardMotorPin;
+    this->forwardMotorPin = forwardMotorPin;
+    this->backwardMotorPin = forwardMotorPin;
 
     pinMode(forwardMotorPin, OUTPUT);
     pinMode(backwardMotorPin, OUTPUT);
@@ -53,21 +57,21 @@ void Motor::start()
     }
 }
 
-void Motor::startSmooth(bool isForward)
-{
-    int speed = 0;
-    while (digitalRead(forwardMotorPin) != MAX_SPEED)
-    {
-        if (isForward)
-        {
-            moveForward(speed);
-        }
-        else
-        {
-            moveBackward(speed);
-        }
+// void Motor::startSmooth(bool isForward)
+// {
+//     int speed = 0;
+//     while (digitalRead(forwardMotorPin) != MAX_SPEED)
+//     {
+//         if (isForward)
+//         {
+//             moveForward(speed);
+//         }
+//         else
+//         {
+//             moveBackward(speed);
+//         }
 
-        delay(50);
-        speed++;
-    }
-}
+//         delay(50);
+//         speed++;
+//     }
+// }

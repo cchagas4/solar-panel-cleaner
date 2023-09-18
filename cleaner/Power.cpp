@@ -38,6 +38,7 @@ bool Power::isOn()
     Serial.println("POWER ---> [" + currentStatus + "]");
     if (isPowerOn == LOW)
     {
+        Serial.println("Turning Off ---> [" + currentStatus + "]");
         off();
     } else if(lastStatus != currentStatus){
         on();

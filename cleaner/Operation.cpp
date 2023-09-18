@@ -1,10 +1,21 @@
 #include "Operation.h"
 
-Operation::Operation(Led onoff, Led cleaning, Led squeegeeing)
+Operation::Operation()
+{
+}
+
+void Operation::configLeds(Led onoff, Led cleaning, Led squeegeeing)
 {
     onoffLed = onoff;
     cleaningLed = cleaning;
     squeegeeingLed = squeegeeing;
+}
+
+void Operation::configMotors(Motor engine, Motor brush, Motor valve)
+{
+    engineMotor = engine;
+    brushMotor = brush;
+    valveMotor = valve;
 }
 
 void Operation::control()
@@ -30,16 +41,25 @@ void Operation::control()
         statusDescription = "CLEANING";
         cleaningLed.turnOn();
         squeegeeingLed.turnOff();
+        engineMotor.moveForward(255);
+        brushMotor.start();
+        valveMotor.start();
         break;
     case 3: // "SQUEEGEEING"
         statusDescription = "SQUEEGEEING";
         cleaningLed.turnOff();
         squeegeeingLed.turnOn();
+        engineMotor.moveBackward(255);
+        brushMotor.stop();
+        valveMotor.stop();
         break;
     case 4: // "ERROR"
         statusDescription = "ERROR";
         cleaningLed.turnOn();
         squeegeeingLed.turnOn();
+        engineMotor.stop();
+        brushMotor.stop();
+        valveMotor.stop();
         break;
     default:
         Operation::status = 4;

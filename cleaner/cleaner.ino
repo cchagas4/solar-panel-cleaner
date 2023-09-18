@@ -2,9 +2,9 @@
 #include <Arduino.h>
 
 #include "Led.h"
+#include "Motor.h"
 #include "Operation.h"
 #include "Power.h"
-// #include "Motor.h"
 
 #define INDICATIVE_RED 13
 #define INDICATIVE_BLUE 12
@@ -23,16 +23,16 @@
 
 // float brushMotor;            // port 5
 
-// Motor motionEngine(FORWARD_ENGINE, BACKWARD_ENGINE);
+Motor motionEngine(FORWARD_ENGINE, BACKWARD_ENGINE);
 
-// Motor brush(BRUSH_ENGINE);
-// Motor valve(VALVE_ENGINE);
+Motor brush(BRUSH_ENGINE);
+Motor valve(VALVE_ENGINE);
 
 Power power(ON_OFF, EMERGENCY_BUTTON);
 Led red(INDICATIVE_RED);
 Led blue(INDICATIVE_BLUE);
 Led green(INDICATIVE_GREEN);
-Operation operation(red, blue, green);
+Operation operation;
 
 bool emergencyMode;
 bool powerFake = true;
@@ -41,6 +41,7 @@ void setup()
 {
   Serial.begin(115200);
   attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON), emergencyTrigger, CHANGE);
+  initialConfiguration();
 }
 
 void loop()
@@ -56,6 +57,12 @@ void loop()
     }
   }
   // delay(1000);
+}
+
+void initialConfiguration()
+{
+  operation.configLeds(red, blue, green);
+  operation.configMotors(motionEngine, brush, valve);
 }
 
 void emergencyTrigger()
