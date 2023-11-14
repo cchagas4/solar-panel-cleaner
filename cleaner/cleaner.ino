@@ -5,6 +5,7 @@
 #include "Motor.h"
 #include "Operation.h"
 #include "Power.h"
+#include "UltrassonicSensor.h"
 
 #define INDICATIVE_RED 13
 #define INDICATIVE_BLUE 12
@@ -18,8 +19,14 @@
 #define BRUSH_ENGINE 6
 #define VALVE_ENGINE 3
 
-#define FRONT_SENSOR A0
-#define BACK_SENSOR A1
+// TODO 4 pins to ultrassonic sensors
+#define FRONT_TRIGGER A0
+#define FRONT_ECHO A1
+#define BACK_TRIGGER A2
+#define BACK_ECHO A3
+
+// #define FRONT_SENSOR A0 TODO
+// #define BACK_SENSOR A1 TODO
 
 // float brushMotor;            // port 5
 
@@ -34,8 +41,11 @@ Led blue(INDICATIVE_BLUE);
 Led green(INDICATIVE_GREEN);
 Operation operation;
 
+UltrassonicSensor front(FRONT_TRIGGER, FRONT_ECHO); // TODO FIX pins
+UltrassonicSensor back(BACK_TRIGGER, BACK_ECHO);    // TODO FIX pins
+
 bool emergencyMode;
-bool powerFake = true;
+bool powerFake = true; // TODO WTF???
 
 void setup()
 {
@@ -46,6 +56,7 @@ void setup()
 
 void loop()
 {
+  // Checking if emergency mode are trigged
   Serial.println("--- | emergency mode --> " + String(emergencyMode));
   if (!emergencyMode)
   {
@@ -56,13 +67,14 @@ void loop()
       operation.control();
     }
   }
-  // delay(1000);
+  // delay(10000); // TODO avoid delays
 }
 
 void initialConfiguration()
 {
   operation.configLeds(red, blue, green);
   operation.configMotors(motionEngine, brush, valve);
+  operation.configUltrassonicSensors(front, back);
 }
 
 void emergencyTrigger()

@@ -18,6 +18,12 @@ void Operation::configMotors(Motor engine, Motor brush, Motor valve)
     valveMotor = valve;
 }
 
+void Operation::configUltrassonicSensors(UltrassonicSensor front, UltrassonicSensor back)
+{
+    frontSensor = front;
+    backSensor = back;
+}
+
 void Operation::control()
 {
     switch (Operation::status)
@@ -41,17 +47,38 @@ void Operation::control()
         statusDescription = "CLEANING";
         cleaningLed.turnOn();
         squeegeeingLed.turnOff();
-        engineMotor.moveForward(255);
-        brushMotor.start();
-        valveMotor.start();
+
+        int frontDistance = frontSensor.getUltrasonicDistance();
+        distancePrint(frontDistance);
+        if (maxDistance < frontDistance || frontDistance != 0) // TODO refactor
+        {
+            engineMotor.moveForward(255);
+            brushMotor.start();
+            valveMotor.start();
+        }
+        else
+        {
+            status = 3;
+        }
+
         break;
     case 3: // "SQUEEGEEING"
         statusDescription = "SQUEEGEEING";
         cleaningLed.turnOff();
         squeegeeingLed.turnOn();
-        engineMotor.moveBackward(255);
-        brushMotor.stop();
-        valveMotor.stop();
+
+        int backDistance = backSensor.getUltrasonicDistance();
+        distancePrint(backDistance);
+        if (maxDistance < backDistance || backDistance != 0) // TODO refactor
+        {
+            engineMotor.moveBackward(255);
+            brushMotor.stop();
+            valveMotor.stop();
+        }
+        else
+        {
+            status = 0;
+        }
         break;
     case 4: // "ERROR"
         statusDescription = "ERROR";
@@ -66,4 +93,11 @@ void Operation::control()
         break;
     }
     Serial.println("STATUS ---> [" + statusDescription + "]");
+}
+
+void Operation::distancePrint(int distance)
+{
+    Serial.print("OBSTACLE ---> [");
+    Serial.print(distance);
+    Serial.println("]");
 }
