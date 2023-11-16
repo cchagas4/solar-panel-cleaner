@@ -43,10 +43,23 @@ void Led::fade()
 
 void Led::blink()
 {
-    digitalWrite(led, HIGH);
-    delay(ledOnTime);
-    digitalWrite(led, LOW);
-    delay(ledOffTime);
+	currentTime = millis();
+
+    if (ledState)
+    {
+        interval = ledOnTime;
+    }
+    else
+    {
+        interval = ledOffTime;
+    }
+
+    if (currentTime - initTime >= interval) 
+    {
+        initTime = currentTime;
+        ledState = !ledState;
+        digitalWrite(led, ledState);
+    }
 }
 
 void Led::blinkCustom(int ledOnTime, int ledOffTime)
