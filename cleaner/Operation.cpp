@@ -18,6 +18,12 @@ void Operation::configMotors(Motor engine, Motor brush, Motor valve)
     valveMotor = valve;
 }
 
+void Operation::configServoMotors(ServoMotor right, ServoMotor left)
+{
+    squeegeeRight = right;
+    squeegeeLeft = left;
+}
+
 void Operation::configUltrassonicSensors(UltrassonicSensor front, UltrassonicSensor back)
 {
     frontSensor = front;
@@ -34,6 +40,7 @@ void Operation::control()
         onoffLed.turnOff();
         cleaningLed.turnOff();
         squeegeeingLed.turnOff();
+        // TODO turn off motors???
         break;
     case 1: // "ON" TODO
         statusDescription = "ON";
@@ -47,8 +54,10 @@ void Operation::control()
         statusDescription = "CLEANING";
         cleaningLed.turnOn();
         squeegeeingLed.turnOff();
+        squeegeeRight.write(0);
+        squeegeeLeft.write(0);
 
-        int frontDistance = frontSensor.getUltrasonicDistance();
+        frontDistance = frontSensor.getUltrasonicDistance();
         distancePrint(frontDistance);
         if (maxDistance < frontDistance || frontDistance != 0) // TODO refactor
         {
@@ -66,8 +75,10 @@ void Operation::control()
         statusDescription = "SQUEEGEEING";
         cleaningLed.turnOff();
         squeegeeingLed.turnOn();
+        squeegeeRight.write(180);
+        squeegeeLeft.write(180);
 
-        int backDistance = backSensor.getUltrasonicDistance();
+        backDistance = backSensor.getUltrasonicDistance();
         distancePrint(backDistance);
         if (maxDistance < backDistance || backDistance != 0) // TODO refactor
         {

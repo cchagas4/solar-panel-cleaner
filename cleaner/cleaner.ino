@@ -1,11 +1,11 @@
-// #include <Scheduler.h>
 #include <Arduino.h>
 
 #include "Led.h"
 #include "Motor.h"
+#include "ServoMotor.h"
+#include "UltrassonicSensor.h"
 #include "Operation.h"
 #include "Power.h"
-#include "UltrassonicSensor.h"
 
 #define INDICATIVE_RED 13
 #define INDICATIVE_BLUE 12
@@ -16,14 +16,17 @@
 #define FORWARD_ENGINE 10
 #define BACKWARD_ENGINE 9
 
-#define BRUSH_ENGINE 6
+// #define BRUSH_ENGINE 6 // TODO?
 #define VALVE_ENGINE 3
 
 // TODO 4 pins to ultrassonic sensors
-#define FRONT_TRIGGER A0
-#define FRONT_ECHO A1
-#define BACK_TRIGGER A2
-#define BACK_ECHO A3
+#define FRONT_TRIGGER 7
+#define FRONT_ECHO 6
+#define BACK_TRIGGER 5
+#define BACK_ECHO 4
+
+#define SQUEEGEE_RIGHT A4
+#define SQUEEGEE_LEFT A5
 
 // #define FRONT_SENSOR A0 TODO
 // #define BACK_SENSOR A1 TODO
@@ -32,8 +35,12 @@
 
 Motor motionEngine(FORWARD_ENGINE, BACKWARD_ENGINE);
 
-Motor brush(BRUSH_ENGINE);
+// Motor brush(BRUSH_ENGINE);
+Motor brush; // TODO wich type of motor will be used on brush???
 Motor valve(VALVE_ENGINE);
+
+ServoMotor squeegeeRight(SQUEEGEE_RIGHT);
+ServoMotor squeegeeLeft(SQUEEGEE_LEFT);
 
 Power power(ON_OFF, EMERGENCY_BUTTON);
 Led red(INDICATIVE_RED);
@@ -49,9 +56,16 @@ bool powerFake = true; // TODO WTF???
 
 void setup()
 {
+  // blue.turnOn();
   Serial.begin(115200);
   attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON), emergencyTrigger, CHANGE);
   initialConfiguration();
+  blue.blink();
+
+  if (power.isOn())
+  {
+    red.turnOn();
+  }
 }
 
 void loop()
@@ -67,13 +81,14 @@ void loop()
       operation.control();
     }
   }
-  // delay(10000); // TODO avoid delays
+  delay(5000); // TODO avoid delays
 }
 
 void initialConfiguration()
 {
   operation.configLeds(red, blue, green);
   operation.configMotors(motionEngine, brush, valve);
+  operation.configServoMotors(squeegeeRight, squeegeeLeft);
   operation.configUltrassonicSensors(front, back);
 }
 
