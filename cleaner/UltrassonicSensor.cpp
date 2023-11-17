@@ -9,14 +9,12 @@ UltrassonicSensor::UltrassonicSensor(byte trigger, byte echo)
 {
     this->trigger = trigger;
     this->echo = echo;
+    pinMode(trigger, OUTPUT);
+    pinMode(echo, INPUT);
 }
 
 int UltrassonicSensor::getUltrasonicDistance()
 {
-    // TODO dicover why not working outside here (pins configurations)
-    pinMode(trigger, OUTPUT);
-    pinMode(echo, INPUT);
-
     long duration;
     int distance;
 
