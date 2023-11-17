@@ -26,6 +26,9 @@ private:
 	int backDistance = 0;
 	void distancePrint(int distance);
 
+	void turnOffMotors();
+	void ledsControl();
+
 public:
 	Operation();
 	void configLeds(Led onoff, Led cleaning, Led squeegeeing);

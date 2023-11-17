@@ -42,23 +42,18 @@ void Operation::control()
 
     case 0: // "OFF"
         statusDescription = "OFF";
-        onoffLed.turnOn();
-        cleaningLed.turnOff();
-        squeegeeingLed.turnOff();
-        // TODO turn off motors??
+        ledsControl();
+        turnOffMotors();
         break;
     case 1: // "ON" TODO
         statusDescription = "ON";
-        onoffLed.turnOn();
-        cleaningLed.blink();
-        squeegeeingLed.blink();
+        ledsControl();
         // start cleaning
         status = 2;
         break;
     case 2: // "CLEANING"
         statusDescription = "CLEANING";
-        cleaningLed.fade();
-        squeegeeingLed.turnOff();
+        ledsControl();
         squeegeeRight.write(0);
         squeegeeLeft.write(0);
 
@@ -76,8 +71,7 @@ void Operation::control()
         break;
     case 3: // "SQUEEGEEING"
         statusDescription = "SQUEEGEEING";
-        cleaningLed.turnOff();
-        squeegeeingLed.blink();
+        ledsControl();
         squeegeeRight.write(180);
         squeegeeLeft.write(180);
 
@@ -96,13 +90,48 @@ void Operation::control()
         statusDescription = "ERROR";
         cleaningLed.turnOn();
         squeegeeingLed.turnOn();
-        engineMotor.stop();
-        brushMotor.stop();
-        valveMotor.stop();
+        turnOffMotors();
         break;
     default:
         Operation::status = 4;
         break;
     }
     Serial.println("[status] | " + statusDescription + " |");
+}
+
+void Operation::turnOffMotors()
+{
+    engineMotor.stop();
+    brushMotor.stop();
+    valveMotor.stop();
+}
+
+void Operation::ledsControl()
+{
+    switch (Operation::status)
+    {
+    case 0: // "OFF"
+        onoffLed.blink();
+        cleaningLed.turnOff();
+        squeegeeingLed.turnOff();
+        break;
+    case 1: // "ON" TODO
+        onoffLed.turnOn();
+        cleaningLed.turnOff();
+        squeegeeingLed.turnOff();
+        break;
+    case 2: // "CLEANING"
+        cleaningLed.fade();
+        squeegeeingLed.turnOff();
+        break;
+    case 3: // "SQUEEGEEING"
+        cleaningLed.turnOff();
+        squeegeeingLed.blink();
+        break;
+    case 4: // "ERROR"
+        onoffLed.blink();
+        cleaningLed.blink();
+        squeegeeingLed.blink();
+        break;
+    }
 }
