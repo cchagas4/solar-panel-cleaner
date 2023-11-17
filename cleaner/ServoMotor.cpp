@@ -1,8 +1,7 @@
-#include "ServoMotor.h"  
+#include "ServoMotor.h"
 
 ServoMotor::ServoMotor()
 {
-
 }
 
 ServoMotor::ServoMotor(byte servoPin)
@@ -10,6 +9,7 @@ ServoMotor::ServoMotor(byte servoPin)
     servoMotor.attach(servoPin);
 }
 
-void ServoMotor::write(int degree){
+void ServoMotor::write(int degree)
+{
     servoMotor.write(degree);
 }

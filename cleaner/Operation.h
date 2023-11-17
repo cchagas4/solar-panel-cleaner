@@ -21,7 +21,7 @@ private:
 	UltrassonicSensor frontSensor;
 	UltrassonicSensor backSensor;
 
-	int maxDistance = 50;
+	int maxDistance = 30;
 	int frontDistance = 0;
 	int backDistance = 0;
 	void distancePrint(int distance);

@@ -32,6 +32,11 @@ void Operation::configUltrassonicSensors(UltrassonicSensor front, UltrassonicSen
 
 void Operation::control()
 {
+    frontDistance = frontSensor.getUltrasonicDistance();
+    backDistance = backSensor.getUltrasonicDistance();
+    Serial.println("[CONTROL] | FRONT DISTANCE --> " + String(frontDistance));
+    Serial.println("[CONTROL] | BACK DISTANCE --> " + String(backDistance));
+
     switch (Operation::status)
     {
 
@@ -57,9 +62,7 @@ void Operation::control()
         squeegeeRight.write(0);
         squeegeeLeft.write(0);
 
-        frontDistance = frontSensor.getUltrasonicDistance();
-        distancePrint(frontDistance);
-        if (maxDistance < frontDistance || frontDistance != 0) // TODO refactor
+        if (maxDistance < frontDistance)
         {
             engineMotor.moveForward(255);
             brushMotor.start();
@@ -78,9 +81,7 @@ void Operation::control()
         squeegeeRight.write(180);
         squeegeeLeft.write(180);
 
-        backDistance = backSensor.getUltrasonicDistance();
-        distancePrint(backDistance);
-        if (maxDistance < backDistance || backDistance != 0) // TODO refactor
+        if (maxDistance < backDistance)
         {
             engineMotor.moveBackward(255);
             brushMotor.stop();
@@ -103,12 +104,5 @@ void Operation::control()
         Operation::status = 4;
         break;
     }
-    Serial.println("STATUS ---> [" + statusDescription + "]");
-}
-
-void Operation::distancePrint(int distance)
-{
-    Serial.print("OBSTACLE ---> [");
-    Serial.print(distance);
-    Serial.println("]");
+    Serial.println("[status] | " + statusDescription + " |");
 }

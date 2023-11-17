@@ -71,17 +71,19 @@ void setup()
 void loop()
 {
   // Checking if emergency mode are trigged
-  Serial.println("--- | emergency mode --> " + String(emergencyMode));
   if (!emergencyMode)
   {
-    Serial.println("--- | Checking power on button status |");
     if (power.isOn())
     {
-      Serial.println("--- | Control |");
-      operation.control();
+      Serial.println("[main] | Calling Control |"); // TODO uncomment
+      operation.control();                          // TODO uncomment
     }
   }
-  delay(5000); // TODO avoid delays
+  else
+  {
+    Serial.println("[main] | EMERGENCY MODE |");
+  }
+  // delay(2000); // TODO avoid delays
 }
 
 void initialConfiguration()
@@ -96,6 +98,6 @@ void emergencyTrigger()
 {
   emergencyMode = true;
   power.off();
-  Serial.println("--- | EMERGENCY BUTTON WAS TRIGGERED |");
-  Serial.println("--- | TURNED OFF OPERATIONS |");
+  Serial.println("[main] | EMERGENCY BUTTON WAS TRIGGERED |");
+  Serial.println("[main] | TURNED OFF OPERATIONS |");
 }

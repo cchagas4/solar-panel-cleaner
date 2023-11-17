@@ -7,13 +7,16 @@ UltrassonicSensor::UltrassonicSensor()
 
 UltrassonicSensor::UltrassonicSensor(byte trigger, byte echo)
 {
-    pinMode(trigger, OUTPUT);
-    pinMode(echo, INPUT);
+    this->trigger = trigger;
+    this->echo = echo;
 }
 
 int UltrassonicSensor::getUltrasonicDistance()
 {
-    // Function to retreive the distance reading of the ultrasonic sensor
+    // TODO dicover why not working outside here (pins configurations)
+    pinMode(trigger, OUTPUT);
+    pinMode(echo, INPUT);
+
     long duration;
     int distance;
 
@@ -33,9 +36,6 @@ int UltrassonicSensor::getUltrasonicDistance()
     duration = pulseIn(echo, HIGH);
     // Calculate the distance:
     distance = duration * 0.034 / 2;
-
-    // Uncomment this line to return value in IN instead of CM:
-    // distance = distance * 0.3937008
 
     // Return the distance read from the sensor:
     return distance;
