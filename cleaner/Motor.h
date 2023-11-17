@@ -13,7 +13,7 @@ private:
 	byte backwardMotorPin;
 	byte actuator;
 
-	bool hasSpeedControl;
+	bool hasDirection;
 
 public:
 	Motor();
@@ -24,6 +24,5 @@ public:
 	void moveBackward(int speed);
 	void stop();
 	void start();
-	// void startSmooth(bool isForward);
 };
 #endif

@@ -1,5 +1,3 @@
-// #include <list>
-
 #include "Power.h"
 
 /* STATUS
@@ -30,17 +28,26 @@ void Power::off()
     Operation::status = 0;
 }
 
+void Power::emergencyMode()
+{
+    isPowerOn = LOW;
+    setPinsToEmergencyMode();
+    Operation::status = 0;
+}
+
 bool Power::isOn()
 {
     isPowerOn = digitalRead(onOff);
-    // Debug
+
     String currentStatus = isPowerOn == HIGH ? "ON" : "OFF";
-    Serial.println("POWER ---> [" + currentStatus + "]");
+    Serial.println("[power] | [" + currentStatus + "]");
     if (isPowerOn == LOW)
     {
-        Serial.println("Turning Off ---> [" + currentStatus + "]");
+        Serial.println("[power] | Turning Off ---> [" + currentStatus + "]");
         off();
-    } else if(lastStatus != currentStatus){
+    }
+    else if (lastStatus != currentStatus)
+    {
         on();
     }
 
@@ -52,6 +59,20 @@ void Power::setPinsToLow()
 {
     for (int pin : pins)
     {
+        digitalWrite(pin, LOW);
+    }
+}
+
+void Power::setPinsToEmergencyMode()
+{
+    configAllPins();
+    setPinsToLow();
+}
+
+void Power::configAllPins()
+{
+    for (int pin : pins)
+    {
         if (pin == onOff || pin == emergency)
         {
             pinMode(pin, INPUT_PULLUP);
@@ -59,7 +80,6 @@ void Power::setPinsToLow()
         else
         {
             pinMode(pin, OUTPUT);
-            digitalWrite(pin, LOW);
         }
     }
 }

@@ -10,16 +10,15 @@
 #define INDICATIVE_RED 13
 #define INDICATIVE_BLUE 12
 #define INDICATIVE_GREEN 11
+
 #define EMERGENCY_BUTTON 2
 #define ON_OFF 8
 
 #define FORWARD_ENGINE 10
 #define BACKWARD_ENGINE 9
+#define BRUSH_ENGINE 3
+#define VALVE_ENGINE A0
 
-// #define BRUSH_ENGINE 6 // TODO?
-#define VALVE_ENGINE 3
-
-// TODO 4 pins to ultrassonic sensors
 #define FRONT_TRIGGER 7
 #define FRONT_ECHO 6
 #define BACK_TRIGGER 5
@@ -28,15 +27,9 @@
 #define SQUEEGEE_RIGHT A4
 #define SQUEEGEE_LEFT A5
 
-// #define FRONT_SENSOR A0 TODO
-// #define BACK_SENSOR A1 TODO
-
-// float brushMotor;            // port 5
-
 Motor motionEngine(FORWARD_ENGINE, BACKWARD_ENGINE);
 
-// Motor brush(BRUSH_ENGINE);
-Motor brush; // TODO wich type of motor will be used on brush???
+Motor brush(BRUSH_ENGINE);
 Motor valve(VALVE_ENGINE);
 
 ServoMotor squeegeeRight(SQUEEGEE_RIGHT);
@@ -48,24 +41,16 @@ Led blue(INDICATIVE_BLUE);
 Led green(INDICATIVE_GREEN);
 Operation operation;
 
-UltrassonicSensor front(FRONT_TRIGGER, FRONT_ECHO); // TODO FIX pins
-UltrassonicSensor back(BACK_TRIGGER, BACK_ECHO);    // TODO FIX pins
+UltrassonicSensor front(FRONT_TRIGGER, FRONT_ECHO);
+UltrassonicSensor back(BACK_TRIGGER, BACK_ECHO);
 
 bool emergencyMode;
-bool powerFake = true; // TODO WTF???
 
 void setup()
 {
-  // blue.turnOn();
   Serial.begin(115200);
   attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON), emergencyTrigger, CHANGE);
   initialConfiguration();
-  blue.blink();
-
-  if (power.isOn())
-  {
-    red.turnOn();
-  }
 }
 
 void loop()
@@ -75,15 +60,15 @@ void loop()
   {
     if (power.isOn())
     {
-      Serial.println("[main] | Calling Control |"); // TODO uncomment
-      operation.control();                          // TODO uncomment
+      Serial.println("[main] | Calling Control |");
+      operation.control();
     }
   }
   else
   {
     Serial.println("[main] | EMERGENCY MODE |");
   }
-  // delay(2000); // TODO avoid delays
+  // delay(1000); // TODO avoid delays
 }
 
 void initialConfiguration()
@@ -97,7 +82,7 @@ void initialConfiguration()
 void emergencyTrigger()
 {
   emergencyMode = true;
-  power.off();
+  power.emergencyMode();
   Serial.println("[main] | EMERGENCY BUTTON WAS TRIGGERED |");
   Serial.println("[main] | TURNED OFF OPERATIONS |");
 }

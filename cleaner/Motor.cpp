@@ -6,7 +6,7 @@ Motor::Motor()
 
 Motor::Motor(byte actuator)
 {
-    hasSpeedControl = false;
+    hasDirection = false;
     this->actuator = actuator;
     pinMode(actuator, OUTPUT);
 }
@@ -19,7 +19,7 @@ Motor::Motor(byte forwardMotorPin, byte backwardMotorPin)
     pinMode(forwardMotorPin, OUTPUT);
     pinMode(backwardMotorPin, OUTPUT);
 
-    hasSpeedControl = true;
+    hasDirection = true;
 }
 
 void Motor::moveForward(int speed)
@@ -33,7 +33,7 @@ void Motor::moveBackward(int speed)
 
 void Motor::stop()
 {
-    if (hasSpeedControl)
+    if (hasDirection)
     {
         analogWrite(forwardMotorPin, MIN_SPEED);
         analogWrite(backwardMotorPin, MIN_SPEED);
@@ -46,32 +46,13 @@ void Motor::stop()
 
 void Motor::start()
 {
-    if (hasSpeedControl)
+    if (hasDirection)
     {
         analogWrite(forwardMotorPin, MAX_SPEED);
         analogWrite(backwardMotorPin, MAX_SPEED);
     }
     else
     {
-        digitalWrite(actuator, LOW);
+        digitalWrite(actuator, HIGH);
     }
 }
-
-// void Motor::startSmooth(bool isForward)
-// {
-//     int speed = 0;
-//     while (digitalRead(forwardMotorPin) != MAX_SPEED)
-//     {
-//         if (isForward)
-//         {
-//             moveForward(speed);
-//         }
-//         else
-//         {
-//             moveBackward(speed);
-//         }
-
-//         delay(50);
-//         speed++;
-//     }
-// }

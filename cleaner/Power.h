@@ -12,12 +12,15 @@ private:
 	byte emergency;
 	String lastStatus;
 	void setPinsToLow();
+	void setPinsToEmergencyMode();
+	void configAllPins();
 
 public:
 	Power(byte power, byte emergency);
 
 	void on();
 	void off();
+	void emergencyMode();
 	bool isOn();
 };
 #endif
