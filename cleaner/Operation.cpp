@@ -37,22 +37,22 @@ void Operation::control()
 
     case 0: // "OFF"
         statusDescription = "OFF";
-        onoffLed.turnOff();
+        onoffLed.turnOn();
         cleaningLed.turnOff();
         squeegeeingLed.turnOff();
-        // TODO turn off motors???
+        // TODO turn off motors??
         break;
     case 1: // "ON" TODO
         statusDescription = "ON";
         onoffLed.turnOn();
-        cleaningLed.turnOff();
-        squeegeeingLed.turnOff();
+        cleaningLed.blink();
+        squeegeeingLed.blink();
         // start cleaning
         status = 2;
         break;
     case 2: // "CLEANING"
         statusDescription = "CLEANING";
-        cleaningLed.turnOn();
+        cleaningLed.fade();
         squeegeeingLed.turnOff();
         squeegeeRight.write(0);
         squeegeeLeft.write(0);
@@ -74,7 +74,7 @@ void Operation::control()
     case 3: // "SQUEEGEEING"
         statusDescription = "SQUEEGEEING";
         cleaningLed.turnOff();
-        squeegeeingLed.turnOn();
+        squeegeeingLed.blink();
         squeegeeRight.write(180);
         squeegeeLeft.write(180);
 

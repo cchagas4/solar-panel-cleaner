@@ -2,6 +2,9 @@
 #define ARDUINO_LED_H
 #include <Arduino.h>
 
+#define UP 0
+#define DOWN 1
+
 class Led
 {
 private:

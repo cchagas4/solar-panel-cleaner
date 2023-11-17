@@ -86,7 +86,7 @@ void loop()
 
 void initialConfiguration()
 {
-  operation.configLeds(red, blue, green);
+  operation.configLeds(red, green, blue);
   operation.configMotors(motionEngine, brush, valve);
   operation.configServoMotors(squeegeeRight, squeegeeLeft);
   operation.configUltrassonicSensors(front, back);
