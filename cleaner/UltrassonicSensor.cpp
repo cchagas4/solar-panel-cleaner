@@ -31,7 +31,7 @@ int UltrassonicSensor::getUltrasonicDistance()
     digitalWrite(trigger, LOW);
 
     // Read the echo pin:
-    duration = pulseIn(echo, HIGH);
+    duration = pulseIn(echo, HIGH, 10000UL); // TODO aprox 1m
     // Calculate the distance:
     distance = duration * 0.034 / 2;
 

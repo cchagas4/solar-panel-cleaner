@@ -40,7 +40,7 @@ bool Power::isOn()
     isPowerOn = digitalRead(onOff);
 
     String currentStatus = isPowerOn == HIGH ? "ON" : "OFF";
-    Serial.println("[power] | [" + currentStatus + "]");
+    // Serial.println("[power] | [" + currentStatus + "]");
     if (isPowerOn == LOW)
     {
         Serial.println("[power] | Turning Off ---> [" + currentStatus + "]");

@@ -39,7 +39,6 @@ void Operation::control()
 
     switch (Operation::status)
     {
-
     case 0: // "OFF"
         statusDescription = "OFF";
         ledsControl();
@@ -49,6 +48,7 @@ void Operation::control()
         statusDescription = "ON";
         ledsControl();
         // start cleaning
+
         status = 2;
         break;
     case 2: // "CLEANING"

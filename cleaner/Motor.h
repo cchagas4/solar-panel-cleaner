@@ -17,7 +17,7 @@ private:
 
 public:
 	Motor();
-	Motor(byte forwardMotorPin);
+	Motor(byte actuator);
 	Motor(byte forwardMotorPin, byte backwardMotorPin);
 
 	void moveForward(int speed);
