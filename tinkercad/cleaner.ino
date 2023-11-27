@@ -11,35 +11,36 @@
 class Led
 {
 private:
-    inline static int brightness = 0;
-    inline static int fadeAmount = 5;
-    inline static int ledOnTime = 200;
-    inline static int ledOffTime = 100;
-    inline static int interval = 0;
-    inline static int ledState = LOW;
-    unsigned long initTime = 0;
-    unsigned long currentTime;
+	inline static int brightness = 0;
+	inline static int fadeAmount = 5;
+	inline static int ledOnTime = 200;
+	inline static int ledOffTime = 100;
+	inline static int interval = 0;
+	inline static int ledState = LOW;
+	unsigned long initTime = 0;
+	unsigned long currentTime;
 
-    byte led = 13;
+	byte led = 13;
 
-    byte fadeDirection = UP;
-    int fadeValue = 0;
-    unsigned long previousFadeMillis;
-    int fadeInterval = 50;
+	byte fadeDirection = UP;
+	int fadeValue = 0;
+	unsigned long previousFadeMillis;
+	int fadeInterval = 50;
 
 public:
-    Led(byte pin);
-    Led();
+	Led(byte pin);
+	Led();
 
-    void fade();
-    void blink();
-    void blinkCustom(int ledOnTime, int ledOffTime);
-    void turnOn();
-    void turnOff();
-    void setPinLed(byte pin);
-    int getPin();
+	void fade();
+	void blink();
+	void blinkCustom(int ledOnTime, int ledOffTime);
+	void turnOn();
+	void turnOff();
+	void setPinLed(byte pin);
+	int getPin();
 };
 #endif
+
 
 Led::Led(byte pin)
 {
@@ -130,30 +131,31 @@ int Led::getPin()
     return this->led;
 }
 
+
 #ifndef ARDUINO_MOTOR_H
 #define ARDUINO_MOTOR_H
 
 class Motor
 {
 private:
-    const static int MIN_SPEED = 0;
-    const static int MAX_SPEED = 255;
+	const static int MIN_SPEED = 0;
+	const static int MAX_SPEED = 255;
 
-    byte forwardMotorPin;
-    byte backwardMotorPin;
-    byte actuator;
+	byte forwardMotorPin;
+	byte backwardMotorPin;
+	byte actuator;
 
-    bool hasDirection;
+	bool hasDirection;
 
 public:
-    Motor();
-    Motor(byte forwardMotorPin);
-    Motor(byte forwardMotorPin, byte backwardMotorPin);
+	Motor();
+	Motor(byte actuator);
+	Motor(byte forwardMotorPin, byte backwardMotorPin);
 
-    void moveForward(int speed);
-    void moveBackward(int speed);
-    void stop();
-    void start();
+	void moveForward(int speed);
+	void moveBackward(int speed);
+	void stop();
+	void start();
 };
 #endif
 
@@ -163,7 +165,7 @@ Motor::Motor()
 
 Motor::Motor(byte actuator)
 {
-    hasDirection = false;
+    this->hasDirection = false;
     this->actuator = actuator;
     pinMode(actuator, OUTPUT);
 }
@@ -171,62 +173,50 @@ Motor::Motor(byte actuator)
 Motor::Motor(byte forwardMotorPin, byte backwardMotorPin)
 {
     this->forwardMotorPin = forwardMotorPin;
-    this->backwardMotorPin = forwardMotorPin;
+    this->backwardMotorPin = backwardMotorPin;
 
     pinMode(forwardMotorPin, OUTPUT);
     pinMode(backwardMotorPin, OUTPUT);
 
-    hasDirection = true;
+    this->hasDirection = true;
 }
 
 void Motor::moveForward(int speed)
 {
     analogWrite(forwardMotorPin, speed);
+    analogWrite(backwardMotorPin, MIN_SPEED);
 }
+
 void Motor::moveBackward(int speed)
 {
     analogWrite(backwardMotorPin, speed);
+    analogWrite(forwardMotorPin, MIN_SPEED);
 }
 
 void Motor::stop()
 {
-    if (hasDirection)
-    {
-        analogWrite(forwardMotorPin, MIN_SPEED);
-        analogWrite(backwardMotorPin, MIN_SPEED);
-    }
-    else
-    {
-        digitalWrite(actuator, LOW);
-    }
+    digitalWrite(actuator, LOW);
 }
 
 void Motor::start()
 {
-    if (hasDirection)
-    {
-        analogWrite(forwardMotorPin, MAX_SPEED);
-        analogWrite(backwardMotorPin, MAX_SPEED);
-    }
-    else
-    {
-        digitalWrite(actuator, HIGH);
-    }
+    digitalWrite(actuator, HIGH);
 }
+
 
 #ifndef ARDUINO_SERVOMOTOR_H
 #define ARDUINO_SERVOMOTOR_H
+#include <Servo.h>
 
 class ServoMotor
 {
 private:
-    Servo servoMotor;
-
+	Servo servoMotor;
 public:
-    ServoMotor();
-    ServoMotor(byte servoPin);
+	ServoMotor();
+	ServoMotor(byte servoPin);
 
-    void write(int degree);
+	void write(int degree);
 };
 #endif
 
@@ -291,7 +281,7 @@ int UltrassonicSensor::getUltrasonicDistance()
     digitalWrite(trigger, LOW);
 
     // Read the echo pin:
-    duration = pulseIn(echo, HIGH);
+    duration = pulseIn(echo, HIGH, 10000UL); // TODO aprox 1m
     // Calculate the distance:
     distance = duration * 0.034 / 2;
 
@@ -301,38 +291,37 @@ int UltrassonicSensor::getUltrasonicDistance()
 
 #ifndef ARDUINO_OPERATION_H
 #define ARDUINO_OPERATION_H
-
 class Operation
 {
 private:
-    Led onoffLed;
-    Led cleaningLed;
-    Led squeegeeingLed;
-    Motor engineMotor;
-    Motor brushMotor;
-    Motor valveMotor;
-    ServoMotor squeegeeRight;
-    ServoMotor squeegeeLeft;
-    String statusDescription;
-    UltrassonicSensor frontSensor;
-    UltrassonicSensor backSensor;
+	Led onoffLed;
+	Led cleaningLed;
+	Led squeegeeingLed;
+	Motor engineMotor;
+	Motor brushMotor;
+	Motor valveMotor;
+	ServoMotor squeegeeRight;
+	ServoMotor squeegeeLeft;
+	String statusDescription;
+	UltrassonicSensor frontSensor;
+	UltrassonicSensor backSensor;
 
-    int maxDistance = 30;
-    int frontDistance = 0;
-    int backDistance = 0;
-    void distancePrint(int distance);
+	int maxDistance = 30;
+	int frontDistance = 0;
+	int backDistance = 0;
+	void distancePrint(int distance);
 
-    void turnOffMotors();
-    void ledsControl();
+	void turnOffMotors();
+	void ledsControl();
 
 public:
-    Operation();
-    void configLeds(Led onoff, Led cleaning, Led squeegeeing);
-    void configMotors(Motor engine, Motor brush, Motor valve);
-    void configServoMotors(ServoMotor right, ServoMotor left);
-    void configUltrassonicSensors(UltrassonicSensor front, UltrassonicSensor back);
-    inline static int status = 0;
-    void control();
+	Operation();
+	void configLeds(Led onoff, Led cleaning, Led squeegeeing);
+	void configMotors(Motor engine, Motor brush, Motor valve);
+	void configServoMotors(ServoMotor right, ServoMotor left);
+	void configUltrassonicSensors(UltrassonicSensor front, UltrassonicSensor back);
+	inline static int status = 0;
+	void control();
 };
 #endif
 
@@ -375,7 +364,6 @@ void Operation::control()
 
     switch (Operation::status)
     {
-
     case 0: // "OFF"
         statusDescription = "OFF";
         ledsControl();
@@ -385,6 +373,7 @@ void Operation::control()
         statusDescription = "ON";
         ledsControl();
         // start cleaning
+
         status = 2;
         break;
     case 2: // "CLEANING"
@@ -478,24 +467,25 @@ void Operation::ledsControl()
 class Power
 {
 private:
-    byte pins[14] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
-    int isPowerOn;
-    byte onOff;
-    byte emergency;
-    String lastStatus;
-    void setPinsToLow();
-    void setPinsToEmergencyMode();
-    void configAllPins();
+	byte pins[14] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+	int isPowerOn;
+	byte onOff;
+	byte emergency;
+	String lastStatus;
+	void setPinsToLow();
+	void setPinsToEmergencyMode();
+	void configAllPins();
 
 public:
-    Power(byte power, byte emergency);
+	Power(byte power, byte emergency);
 
-    void on();
-    void off();
-    void emergencyMode();
-    bool isOn();
+	void on();
+	void off();
+	void emergencyMode();
+	bool isOn();
 };
 #endif
+
 
 /* STATUS
  * 0 -- ON
@@ -537,7 +527,7 @@ bool Power::isOn()
     isPowerOn = digitalRead(onOff);
 
     String currentStatus = isPowerOn == HIGH ? "ON" : "OFF";
-    Serial.println("[power] | [" + currentStatus + "]");
+    // Serial.println("[power] | [" + currentStatus + "]");
     if (isPowerOn == LOW)
     {
         Serial.println("[power] | Turning Off ---> [" + currentStatus + "]");
@@ -581,6 +571,7 @@ void Power::configAllPins()
     }
 }
 
+
 #define INDICATIVE_RED 13
 #define INDICATIVE_BLUE 12
 #define INDICATIVE_GREEN 11
@@ -622,41 +613,41 @@ bool emergencyMode;
 
 void setup()
 {
-    Serial.begin(115200);
-    attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON), emergencyTrigger, CHANGE);
-    initialConfiguration();
+  Serial.begin(115200);
+  attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON), emergencyTrigger, CHANGE);
+  initialConfiguration();
 }
 
 void loop()
 {
-    // Checking if emergency mode are trigged
-    if (!emergencyMode)
+  // Checking if emergency mode are trigged
+  if (!emergencyMode)
+  {
+    if (power.isOn())
     {
-        if (power.isOn())
-        {
-            Serial.println("[main] | Calling Control |");
-            operation.control();
-        }
+      Serial.println("[main] | Calling Control |");
+      operation.control();
     }
-    else
-    {
-        Serial.println("[main] | EMERGENCY MODE |");
-    }
-    // delay(1000); // TODO avoid delays
+  }
+  else
+  {
+    Serial.println("[main] | EMERGENCY MODE |");
+  }
+  // delay(1000); // TODO avoid delays
 }
 
 void initialConfiguration()
 {
-    operation.configLeds(red, green, blue);
-    operation.configMotors(motionEngine, brush, valve);
-    operation.configServoMotors(squeegeeRight, squeegeeLeft);
-    operation.configUltrassonicSensors(front, back);
+  operation.configLeds(red, green, blue);
+  operation.configMotors(motionEngine, brush, valve);
+  operation.configServoMotors(squeegeeRight, squeegeeLeft);
+  operation.configUltrassonicSensors(front, back);
 }
 
 void emergencyTrigger()
 {
-    emergencyMode = true;
-    power.emergencyMode();
-    Serial.println("[main] | EMERGENCY BUTTON WAS TRIGGERED |");
-    Serial.println("[main] | TURNED OFF OPERATIONS |");
+  emergencyMode = true;
+  power.emergencyMode();
+  Serial.println("[main] | EMERGENCY BUTTON WAS TRIGGERED |");
+  Serial.println("[main] | TURNED OFF OPERATIONS |");
 }

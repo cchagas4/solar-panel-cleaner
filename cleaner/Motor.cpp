@@ -27,6 +27,7 @@ void Motor::moveForward(int speed)
     analogWrite(forwardMotorPin, speed);
     analogWrite(backwardMotorPin, MIN_SPEED);
 }
+
 void Motor::moveBackward(int speed)
 {
     analogWrite(backwardMotorPin, speed);
