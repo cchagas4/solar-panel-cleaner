@@ -2,13 +2,13 @@
 
 #include "Led.h"
 #include "Motor.h"
-#include "ServoMotor.h"
+//#include "ServoMotor.h"
 #include "UltrassonicSensor.h"
 #include "Operation.h"
 #include "Power.h"
 
 #define INDICATIVE_RED 13
-#define INDICATIVE_BLUE 12
+#define INDICATIVE_BLUE 3
 #define INDICATIVE_GREEN 11
 
 #define EMERGENCY_BUTTON 2
@@ -16,7 +16,7 @@
 
 #define FORWARD_ENGINE 10
 #define BACKWARD_ENGINE 9
-#define BRUSH_ENGINE 3
+//#define BRUSH_ENGINE 3
 #define VALVE_ENGINE A0
 
 #define FRONT_TRIGGER 7
@@ -24,16 +24,16 @@
 #define BACK_TRIGGER 5
 #define BACK_ECHO 4
 
-#define SQUEEGEE_RIGHT A4
-#define SQUEEGEE_LEFT A5
+//#define SQUEEGEE_RIGHT A4
+//#define SQUEEGEE_LEFT A5
 
 Motor motionEngine(FORWARD_ENGINE, BACKWARD_ENGINE);
 
-Motor brush(BRUSH_ENGINE);
+//Motor brush(BRUSH_ENGINE);
 Motor valve(VALVE_ENGINE);
 
-ServoMotor squeegeeRight(SQUEEGEE_RIGHT);
-ServoMotor squeegeeLeft(SQUEEGEE_LEFT);
+//ServoMotor squeegeeRight(SQUEEGEE_RIGHT);
+//ServoMotor squeegeeLeft(SQUEEGEE_LEFT);
 
 Power power(ON_OFF, EMERGENCY_BUTTON);
 Led red(INDICATIVE_RED);
@@ -56,7 +56,7 @@ void setup()
 void loop()
 {
   // Checking if emergency mode are trigged
-  if (!emergencyMode)
+  while (!emergencyMode)
   {
     if (power.isOn())
     {
@@ -64,18 +64,14 @@ void loop()
       operation.control();
     }
   }
-  else
-  {
-    Serial.println("[main] | EMERGENCY MODE |");
-  }
   // delay(1000); // TODO avoid delays
 }
 
 void initialConfiguration()
 {
   operation.configLeds(red, green, blue);
-  operation.configMotors(motionEngine, brush, valve);
-  operation.configServoMotors(squeegeeRight, squeegeeLeft);
+  operation.configMotors(motionEngine, valve);
+  //operation.configServoMotors(squeegeeRight, squeegeeLeft);
   operation.configUltrassonicSensors(front, back);
 }
 

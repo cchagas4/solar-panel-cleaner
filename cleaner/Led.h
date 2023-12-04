@@ -14,8 +14,8 @@ class Led
 private:
 	inline static int brightness = 0;
 	inline static int fadeAmount = 5;
-	inline static int ledOnTime = 200;
-	inline static int ledOffTime = 100;
+	inline static int ledOnTime = 500;
+	inline static int ledOffTime = 500;
 	inline static int interval = 0;
 	inline static int ledState = LOW;
 	unsigned long initTime = 0;

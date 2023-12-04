@@ -24,14 +24,14 @@ Motor::Motor(byte forwardMotorPin, byte backwardMotorPin)
 
 void Motor::moveForward(int speed)
 {
-    analogWrite(forwardMotorPin, speed);
     analogWrite(backwardMotorPin, MIN_SPEED);
+    analogWrite(forwardMotorPin, speed);
 }
 
 void Motor::moveBackward(int speed)
 {
-    analogWrite(backwardMotorPin, speed);
     analogWrite(forwardMotorPin, MIN_SPEED);
+    analogWrite(backwardMotorPin, speed);
 }
 
 void Motor::stop()

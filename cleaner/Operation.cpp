@@ -11,18 +11,18 @@ void Operation::configLeds(Led onoff, Led cleaning, Led squeegeeing)
     squeegeeingLed = squeegeeing;
 }
 
-void Operation::configMotors(Motor engine, Motor brush, Motor valve)
+void Operation::configMotors(Motor engine, Motor valve)
 {
     engineMotor = engine;
-    brushMotor = brush;
+    //brushMotor = brush;
     valveMotor = valve;
 }
 
-void Operation::configServoMotors(ServoMotor right, ServoMotor left)
-{
-    squeegeeRight = right;
-    squeegeeLeft = left;
-}
+// void Operation::configServoMotors(ServoMotor right, ServoMotor left)
+// {
+//     squeegeeRight = right;
+//     squeegeeLeft = left;
+// }
 
 void Operation::configUltrassonicSensors(UltrassonicSensor front, UltrassonicSensor back)
 {
@@ -44,48 +44,83 @@ void Operation::control()
         ledsControl();
         turnOffMotors();
         break;
+
     case 1: // "ON" TODO
         statusDescription = "ON";
         ledsControl();
-        // start cleaning
-
+        valveMotor.start();
+        delay(10000); // Waiting for the water to start falling
         status = 2;
         break;
+
     case 2: // "CLEANING"
         statusDescription = "CLEANING";
         ledsControl();
-        squeegeeRight.write(0);
-        squeegeeLeft.write(0);
+        //squeegeeRight.write(0);
+        //squeegeeLeft.write(0);
 
-        if (maxDistance < frontDistance)
+        if (!sensorFlag)
         {
-            engineMotor.moveForward(255);
-            brushMotor.start();
-            valveMotor.start();
-        }
-        else
-        {
-            status = 3;
+            if (maxDistance > frontDistance || frontDistance != 0)
+            {
+                engineMotor.moveForward(255);
+                //brushMotor.start();
+                currentTIME = millis();
+                initTIME = currentTIME;
+            }
+            else
+            {
+                sensorFlag = true;
+            }
         }
 
+        currentTIME = millis();
+        if (currentTIME - initTIME >= intervalTIME)
+        {
+            initTIME = currentTIME;
+            sensorFlag = false;
+
+            if (maxDistance < frontDistance || frontDistance == 0)
+            {
+                status = 3;
+            }
+        }
         break;
+
     case 3: // "SQUEEGEEING"
         statusDescription = "SQUEEGEEING";
         ledsControl();
-        squeegeeRight.write(180);
-        squeegeeLeft.write(180);
+        //squeegeeRight.write(180);
+        //squeegeeLeft.write(180);
 
-        if (maxDistance < backDistance)
+        if (!sensorFlag)
         {
-            engineMotor.moveBackward(255);
-            brushMotor.stop();
-            valveMotor.stop();
+            if (maxDistance > backDistance || backDistance != 0)
+            {
+                engineMotor.moveBackward(255);
+                //brushMotor.start();
+                currentTIME = millis();
+                initTIME = currentTIME;
+            }
+            else
+            {
+                sensorFlag = true;
+            }
         }
-        else
+
+        currentTIME = millis();
+        if (currentTIME - initTIME >= intervalTIME)
         {
-            status = 0;
+            initTIME = currentTIME;
+            sensorFlag = false;
+            
+            if (maxDistance < backDistance || backDistance == 0)
+            {
+                status = 0;
+            }
         }
         break;
+        
     case 4: // "ERROR"
         statusDescription = "ERROR";
         cleaningLed.turnOn();
@@ -102,7 +137,7 @@ void Operation::control()
 void Operation::turnOffMotors()
 {
     engineMotor.stop();
-    brushMotor.stop();
+    //brushMotor.stop();
     valveMotor.stop();
 }
 
@@ -126,7 +161,7 @@ void Operation::ledsControl()
         break;
     case 3: // "SQUEEGEEING"
         cleaningLed.turnOff();
-        squeegeeingLed.blink();
+        squeegeeingLed.fade();
         break;
     case 4: // "ERROR"
         onoffLed.blink();
