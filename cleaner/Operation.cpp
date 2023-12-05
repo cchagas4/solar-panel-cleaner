@@ -37,6 +37,11 @@ void Operation::control()
     Serial.println("[CONTROL] | FRONT DISTANCE --> " + String(frontDistance));
     Serial.println("[CONTROL] | BACK DISTANCE --> " + String(backDistance));
 
+    if (frontDistance == 0 && backDistance == 0)
+    {
+        status = 4;
+    }
+
     switch (Operation::status)
     {
     case 0: // "OFF"
@@ -65,7 +70,6 @@ void Operation::control()
             {
                 engineMotor.moveForward(255);
                 //brushMotor.start();
-                currentTIME = millis();
                 initTIME = currentTIME;
             }
             else
@@ -82,8 +86,15 @@ void Operation::control()
 
             if (maxDistance < frontDistance || frontDistance == 0)
             {
+                engineMotor.moveForward(0);
+                cleaningLed.turnOn();
+                delay(5000);
                 status = 3;
             }
+        }
+        else
+        {
+            engineMotor.moveForward(127);
         }
         break;
 
@@ -99,7 +110,6 @@ void Operation::control()
             {
                 engineMotor.moveBackward(255);
                 //brushMotor.start();
-                currentTIME = millis();
                 initTIME = currentTIME;
             }
             else
@@ -116,15 +126,21 @@ void Operation::control()
             
             if (maxDistance < backDistance || backDistance == 0)
             {
+                engineMotor.moveBackward(0);
+                squeegeeingLed.turnOn();
+                delay(5000);
                 status = 0;
             }
+        }
+        else
+        {
+            engineMotor.moveBackward(127);
         }
         break;
         
     case 4: // "ERROR"
         statusDescription = "ERROR";
-        cleaningLed.turnOn();
-        squeegeeingLed.turnOn();
+        ledsControl();
         turnOffMotors();
         break;
     default:
@@ -164,7 +180,7 @@ void Operation::ledsControl()
         squeegeeingLed.fade();
         break;
     case 4: // "ERROR"
-        onoffLed.blink();
+        onoffLed.turnOn();
         cleaningLed.blink();
         squeegeeingLed.blink();
         break;

@@ -32,7 +32,7 @@ void Power::emergencyMode()
 {
     isPowerOn = LOW;
     setPinsToEmergencyMode();
-    Operation::status = 0;
+    Operation::status = 4;
 }
 
 bool Power::isOn()
