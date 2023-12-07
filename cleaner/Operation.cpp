@@ -166,27 +166,27 @@ void Operation::ledsControl()
     switch (Operation::status)
     {
     case 0: // "OFF"
-        onoffLed.blink();
-        cleaningLed.turnOff();
-        squeegeeingLed.turnOff();
+        onoffLed.blink();           // Red
+        cleaningLed.turnOff();      // Blue
+        squeegeeingLed.turnOff();   // Green
         break;
     case 1: // "ON" TODO
-        onoffLed.turnOn();
-        cleaningLed.turnOff();
-        squeegeeingLed.turnOff();
+        onoffLed.turnOn();          // Red
+        cleaningLed.turnOff();      // Blue
+        squeegeeingLed.turnOff();   // Green
         break;
-    case 2: // "CLEANING"
-        cleaningLed.fade();
-        squeegeeingLed.turnOff();
+    case 2: // "CLEANING"           // Red still ON
+        cleaningLed.fade();         // Blue
+        squeegeeingLed.turnOff();   // Green
         break;
-    case 3: // "SQUEEGEEING"
-        cleaningLed.turnOff();
-        squeegeeingLed.fade();
+    case 3: // "SQUEEGEEING"        // Red still ON
+        cleaningLed.turnOff();      // Blue
+        squeegeeingLed.fade();      // Green
         break;
     case 4: // "ERROR"
-        onoffLed.turnOn();
-        cleaningLed.blink();
-        squeegeeingLed.blink();
+        onoffLed.turnOn();          // Red
+        cleaningLed.blink();        // Blue
+        squeegeeingLed.blink();     // Green
         break;
     default:
         Operation::status = 0;
