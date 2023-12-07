@@ -59,7 +59,7 @@ void loop()
   {
     if (power.isOn())
     {
-      Serial.println("[main] | Calling Control |");
+      //Serial.println("[main] | Calling Control |");
       operation.control();
     }
   }
@@ -68,7 +68,7 @@ void loop()
 
 void initialConfiguration()
 {
-  operation.configLeds(red, green, blue);
+  operation.configLeds(red, blue, green);
   operation.configMotors(motionEngine, valve);
   //operation.configServoMotors(squeegeeRight, squeegeeLeft);
   operation.configUltrassonicSensors(front, back);
